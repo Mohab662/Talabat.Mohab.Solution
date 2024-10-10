@@ -12,8 +12,8 @@ using Talabat.Repository.Data;
 namespace Talabat.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20240929165654_initialCreate")]
-    partial class initialCreate
+    [Migration("20241004175602_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,8 +45,7 @@ namespace Talabat.Repository.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PictureUrl")
                         .IsRequired()

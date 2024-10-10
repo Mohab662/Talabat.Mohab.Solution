@@ -1,6 +1,11 @@
 
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Talabat.APIS.Errors;
+using Talabat.APIS.Extentions;
 using Talabat.APIS.Helpers;
+using Talabat.APIS.MiddleWare;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
@@ -20,6 +25,9 @@ namespace Talabat.APIS
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            
+
             builder.Services.AddDbContext<StoreContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -27,8 +35,7 @@ namespace Talabat.APIS
             //builder.Services.AddScoped<IGenericRepository<Product>,GenericRepository<Product>>();
             //builder.Services.AddScoped<IGenericRepository<ProductBrand>, GenericRepository<ProductBrand>>();
             //builder.Services.AddScoped<IGenericRepository<ProductCategory>, GenericRepository<ProductCategory>>();
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddApplicationServicies();
 
             var app = builder.Build();
 
@@ -47,7 +54,7 @@ namespace Talabat.APIS
                 var logger = logerFactory.CreateLogger<Program>();
                 logger.LogError(ex, "an error occured during migration");
             }
-            
+
             //var scope = app.Services.CreateScope();
             //try 
             //{
@@ -59,23 +66,30 @@ namespace Talabat.APIS
             //{
             //    scope.Dispose();
             //}
-            
-            
+
+
 
 
             // Configure the HTTP request pipeline.
+
+            #region MiddleWares
+            app.UseMiddleware<ExceptionMiddleWare>();
+
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleWare();
             }
+            
+
+            app.UseStatusCodePagesWithReExecute("/Errors/{0}");
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
             app.UseStaticFiles();
-            app.MapControllers();
+            app.MapControllers(); 
+            #endregion
 
             app.Run();
         }

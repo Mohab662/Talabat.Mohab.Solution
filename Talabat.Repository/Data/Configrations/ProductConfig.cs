@@ -14,8 +14,8 @@ namespace Talabat.Repository.Data.Configrations
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.Property(N => N.Name)
-                   .IsRequired()
-                   .HasMaxLength(50);
+                   .IsRequired();
+
 
             builder.Property(P => P.Descreption)
                    .IsRequired();
