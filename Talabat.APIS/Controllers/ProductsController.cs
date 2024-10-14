@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.APIS.DTOs;
 using Talabat.APIS.Errors;
+using Talabat.APIS.Helpers;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
-using Talabat.Core.Specification;
 using Talabat.Core.Specification.ProductSpecifications;
 
 namespace Talabat.APIS.Controllers
@@ -28,15 +26,18 @@ namespace Talabat.APIS.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductDto>>> GetProducts([FromQuery]ProductSpecPrams specPrams)
         {
-            var spec = new ProductWithBrandAndCategoryspec();
+            var spec = new ProductWithBrandAndCategoryspec(specPrams);
             var products = await _productRepository.GetAllWithSpecAsync(spec);
-            
-            return Ok(_mapper.Map<IEnumerable<Product>,IEnumerable<ProductDto>>(products));
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDto>>(products);
+
+            var countSpec = new ProductWithFilterationForCountSpec(specPrams);
+            var count = await _productRepository.GetCountAsync(countSpec);
+            return Ok(new Pagination<ProductDto>(specPrams.PageSize,specPrams.PageIndex, count, data));
         }
 
-        [ProducesResponseType(typeof(ProductDto),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
@@ -51,7 +52,7 @@ namespace Talabat.APIS.Controllers
         }
 
         [HttpGet("brands")]
-        public async Task<ActionResult<IEnumerable<ProductBrand>>> GetBrand() 
+        public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetBrand()
         {
             var Brands = await _brandRepository.GetAllAsync();
 
@@ -59,7 +60,7 @@ namespace Talabat.APIS.Controllers
         }
 
         [HttpGet("category")]
-        public async Task<ActionResult<IEnumerable<ProductCategory>>> GetCategory()
+        public async Task<ActionResult<IReadOnlyList<ProductCategory>>> GetCategory()
         {
             var Category = await _categoryRepository.GetAllAsync();
 

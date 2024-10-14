@@ -7,13 +7,13 @@ namespace Talabat.APIS.MiddleWare
     public class ExceptionMiddleWare
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
+        private readonly ILogger<ExceptionMiddleWare> _logger;
         private readonly IWebHostEnvironment _env;
 
         public ExceptionMiddleWare(RequestDelegate next, ILogger<ExceptionMiddleWare> logger, IWebHostEnvironment env)
         {
             _next = next;
-            _logger = logger;
+            _logger=logger;
             _env = env;
         }
         public async Task InvokeAsync(HttpContext httpContext)
