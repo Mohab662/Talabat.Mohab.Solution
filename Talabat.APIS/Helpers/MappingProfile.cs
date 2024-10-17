@@ -10,11 +10,15 @@ namespace Talabat.APIS.Helpers
 
         public MappingProfile()
         {
-                 CreateMap<Product, ProductDto>()
-                .ForMember(d => d.Brand, o => o.MapFrom(s => s.Brand.Name))
-                .ForMember(d => d.Category, o => o.MapFrom(s => s.Category.Name))
-                .ForMember(d => d.PictureUrl, o => o.MapFrom<ProductPicUrlResolver>());
-           
+            CreateMap<Product, ProductDto>()
+           .ForMember(d => d.Brand, o => o.MapFrom(s => s.Brand.Name))
+           .ForMember(d => d.Category, o => o.MapFrom(s => s.Category.Name))
+           .ForMember(d => d.PictureUrl, o => o.MapFrom<ProductPicUrlResolver>());
+
+            CreateMap<CustomerBasket, CustomerBasketDto>();
+            CreateMap<BasketItem, BasketItemDto>();
+
+
         }
     }
 }

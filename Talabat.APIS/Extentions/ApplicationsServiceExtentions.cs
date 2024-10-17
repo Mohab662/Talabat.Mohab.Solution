@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Talabat.APIS.Errors;
 using Talabat.APIS.Helpers;
 using Talabat.Core.Repositories.Contract;
@@ -9,13 +8,15 @@ namespace Talabat.APIS.Extentions
 {
     public static class ApplicationsServiceExtentions
     {
-        
-        
-        public static void AddApplicationServicies(this IServiceCollection Services) 
+
+
+        public static void AddApplicationServicies(this IServiceCollection Services)
         {
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddAutoMapper(typeof(MappingProfile));
-            Services.Configure<ApiBehaviorOptions>(options => {
+            Services.AddSingleton(typeof(IBasketRepository), typeof(BasketRepository));
+            Services.Configure<ApiBehaviorOptions>(options =>
+            {
 
                 options.InvalidModelStateResponseFactory = (actionContext) =>
                 {
@@ -35,9 +36,9 @@ namespace Talabat.APIS.Extentions
         }
 
 
-        public static WebApplication UseSwaggerMiddleWare(this WebApplication app) 
+        public static WebApplication UseSwaggerMiddleWare(this WebApplication app)
         {
-         
+
             app.UseSwagger();
             app.UseSwaggerUI();
             return app;
