@@ -1,15 +1,12 @@
-
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Talabat.APIS.Errors;
+using StackExchange.Redis;
 using Talabat.APIS.Extentions;
-using Talabat.APIS.Helpers;
 using Talabat.APIS.MiddleWare;
-using Talabat.Core.Entities;
-using Talabat.Core.Repositories.Contract;
-using Talabat.Repository;
+using Talabat.Core.Entities.Identity;
 using Talabat.Repository.Data;
+using Talabat.Repository.Data.Identity;
 
 namespace Talabat.APIS
 {
@@ -26,28 +23,47 @@ namespace Talabat.APIS
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            
+
 
             builder.Services.AddDbContext<StoreContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
             //builder.Services.AddScoped<IGenericRepository<Product>,GenericRepository<Product>>();
             //builder.Services.AddScoped<IGenericRepository<ProductBrand>, GenericRepository<ProductBrand>>();
             //builder.Services.AddScoped<IGenericRepository<ProductCategory>, GenericRepository<ProductCategory>>();
+            builder.Services.AddSingleton<IConnectionMultiplexer>((serverProvider) =>
+            {
+                var connection = builder.Configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(connection);
+            });
+
             builder.Services.AddApplicationServicies();
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options => 
+            {
+            
+            
+            }).AddEntityFrameworkStores<AppIdentityDbContext>();
 
             var app = builder.Build();
 
-               using var scope = app.Services.CreateScope();
-               var services = scope.ServiceProvider;
-               var _dbContext = services.GetRequiredService<StoreContext>();
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var _dbContext = services.GetRequiredService<StoreContext>();
+            var _IdentitydbContext = services.GetRequiredService<AppIdentityDbContext>();
+            var _UserManger = services.GetRequiredService<UserManager<AppUser>>();
 
-               var logerFactory= services.GetRequiredService<ILoggerFactory>();
+            var logerFactory = services.GetRequiredService<ILoggerFactory>();
             try
             {
                 await _dbContext.Database.MigrateAsync();
                 await StoreContextSeed.SeedAsync(_dbContext);
+                await _IdentitydbContext.Database.MigrateAsync();
+                await AppIdentityDbContextSeed.SeedUserAsync(_UserManger);
             }
             catch (Exception ex)
             {
@@ -79,7 +95,7 @@ namespace Talabat.APIS
             {
                 app.UseSwaggerMiddleWare();
             }
-            
+
 
             app.UseStatusCodePagesWithReExecute("/Errors/{0}");
 
@@ -88,7 +104,7 @@ namespace Talabat.APIS
             app.UseAuthorization();
 
             app.UseStaticFiles();
-            app.MapControllers(); 
+            app.MapControllers();
             #endregion
 
             app.Run();
