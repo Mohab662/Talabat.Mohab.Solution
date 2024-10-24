@@ -18,7 +18,7 @@ namespace Talabat.APIS.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpPost]
+        [HttpPost("Login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -42,7 +42,7 @@ namespace Talabat.APIS.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
             var user = new AppUser()
@@ -69,5 +69,4 @@ namespace Talabat.APIS.Controllers
 
         }
     }
-}
 }
