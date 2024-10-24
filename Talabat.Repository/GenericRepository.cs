@@ -14,6 +14,17 @@ namespace Talabat.Repository
         {
             _context = context;
         }
+
+        public async Task AddAsync(T entity)
+        {
+           await  _context.AddAsync(entity);
+        }
+
+        public void DeleteAsync(T entity)
+        {
+            _context.Remove(entity);
+        }
+
         public async Task<IReadOnlyList<T>> GetAllAsync()
         {
             if (typeof(T) == typeof(Product))
@@ -45,6 +56,11 @@ namespace Talabat.Repository
         public async Task<T> GetWithSpecAsync(ISpecification<T> spec)
         {
             return await SpecificationEvaluator<T>.GetQuery(_context.Set<T>(), spec).FirstOrDefaultAsync();
+        }
+
+        public async void UpdateAsync(T entity)
+        {
+             _context.Update(entity);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Talabat.APIS.DTOs;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.Orders_Aggregate;
 
 namespace Talabat.APIS.Helpers
 {
@@ -17,6 +18,7 @@ namespace Talabat.APIS.Helpers
 
             CreateMap<CustomerBasket, CustomerBasketDto>();
             CreateMap<BasketItem, BasketItemDto>();
+            CreateMap<AddressDto, Address>().ReverseMap();
 
 
         }
