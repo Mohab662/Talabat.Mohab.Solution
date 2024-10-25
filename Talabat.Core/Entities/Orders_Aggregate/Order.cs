@@ -35,7 +35,7 @@ namespace Talabat.Core.Entities.Orders_Aggregate
        // public decimal Total { get; set; }
 
         public decimal GetTotal() => SubTotal + DeliveryMethod.Cost;
-        public string PaymentIntentId { get; set; }
+        public string PaymentIntentId { get; set; } = string.Empty;
 
     }
 }

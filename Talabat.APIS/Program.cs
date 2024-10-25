@@ -1,12 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 using Talabat.APIS.Extentions;
 using Talabat.APIS.MiddleWare;
 using Talabat.Core.Entities.Identity;
+using Talabat.Core.Services.Contract;
 using Talabat.Repository.Data;
 using Talabat.Repository.Data.Identity;
+using Talabat.Service;
 
 namespace Talabat.APIS
 {
@@ -43,11 +47,24 @@ namespace Talabat.APIS
             });
 
             builder.Services.AddApplicationServicies();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddIdentity<AppUser, IdentityRole>(options => 
             {
             
             
             }).AddEntityFrameworkStores<AppIdentityDbContext>();
+            builder.Services.AddAuthentication().AddJwtBearer("Bearer", options => {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT:ValidIssure"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:AuthKey"]??string.Empty))
+                };
+            });
 
             var app = builder.Build();
 

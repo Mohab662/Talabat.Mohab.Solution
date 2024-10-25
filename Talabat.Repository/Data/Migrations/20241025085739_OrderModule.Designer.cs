@@ -12,7 +12,7 @@ using Talabat.Repository.Data;
 namespace Talabat.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20241024093725_OrderModule")]
+    [Migration("20241025085739_OrderModule")]
     partial class OrderModule
     {
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace Talabat.Repository.Data.Migrations
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("DelabveryTime")
+                    b.Property<string>("DeliveryTime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
