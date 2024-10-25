@@ -19,7 +19,7 @@ namespace Talabat.Repository.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DelabveryTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DeliveryTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
