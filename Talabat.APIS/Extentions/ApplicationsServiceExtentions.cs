@@ -16,6 +16,8 @@ namespace Talabat.APIS.Extentions
         public static void AddApplicationServicies(this IServiceCollection Services)
         {
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            Services.AddSingleton(typeof(IResponseCacheService), typeof(ResponseCacheService));
+            Services.AddScoped<IPaymentService, PaymentService>();
             Services.AddAutoMapper(typeof(MappingProfile));
             Services.AddSingleton(typeof(IBasketRepository), typeof(BasketRepository));
             Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));

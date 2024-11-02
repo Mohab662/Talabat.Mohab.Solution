@@ -48,6 +48,7 @@ namespace Talabat.APIS
 
             builder.Services.AddApplicationServicies();
             builder.Services.AddScoped<IAuthService, AuthService>();
+           
             builder.Services.AddIdentity<AppUser, IdentityRole>(options => 
             {
             
