@@ -7,7 +7,7 @@ namespace Talabat.APIS.DTOs
         public string BuyerEmail { get; set; }
         public DateTimeOffset OrederDate { get; set; } = DateTimeOffset.UtcNow;
         public string Status { get; set; }
-        public Address ShppingAddress { get; set; }
+        public ShipAddress ShppingAddress { get; set; }
 
         public string? DeliveryMethod { get; set; }
         public decimal DeliveryMethodCost { get; set; }

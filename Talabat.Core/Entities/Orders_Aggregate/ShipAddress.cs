@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Talabat.Core.Entities.Orders_Aggregate
 {
-    public class Address
+    public class ShipAddress
     {
-        public Address()
+        public ShipAddress()
         {
             
         }
-        public Address(string firstName, string lastName, string street, string country, string city)
+        public ShipAddress(string firstName, string lastName, string street, string country, string city)
         {
             FirstName = firstName;
             LastName = lastName;

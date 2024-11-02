@@ -29,10 +29,13 @@ namespace Talabat.APIS.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+        [CachedAttribute(300)]
         public async Task<ActionResult<IReadOnlyList<ProductDto>>> GetProducts([FromQuery]ProductSpecPrams specPrams)
         {
             var spec = new ProductWithBrandAndCategoryspec(specPrams);
+
             var products = await _productRepository.GetAllWithSpecAsync(spec);
+
             var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDto>>(products);
 
             var countSpec = new ProductWithFilterationForCountSpec(specPrams);

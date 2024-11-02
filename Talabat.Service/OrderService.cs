@@ -11,19 +11,22 @@ namespace Talabat.Service
     {
         private readonly IBasketRepository _basketRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
+
         //private readonly IGenericRepository<Product> _productRepository;
         //private readonly IGenericRepository<DeliveryMethod> _deliveryMethodRepository;
         //private readonly IGenericRepository<Order> _orderRepository;
 
-        public OrderService(IBasketRepository basketRepository, IUnitOfWork unitOfWork)
+        public OrderService(IBasketRepository basketRepository, IUnitOfWork unitOfWork,IPaymentService paymentService)
         {
             _basketRepository = basketRepository;
             _unitOfWork = unitOfWork;
+            _paymentService = paymentService;
             //_productRepository = productRepository;
             //_deliveryMethodRepository = deliveryMethodRepository;
             //_orderRepository = OrderRepository;
         }
-        public async Task<Order?> CtreateOrderAsync(string buyerEmail, string basketId, int delivaeryMethodId, Address ShippingAddress)
+        public async Task<Order?> CtreateOrderAsync(string buyerEmail, string basketId, int delivaeryMethodId, ShipAddress ShippingAddress)
         {
             var basket = await _basketRepository.GetCutomerBasketAsync(basketId);
 
@@ -43,7 +46,17 @@ namespace Talabat.Service
 
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetAsync(delivaeryMethodId);
 
-            var order = new Order(buyerEmail, ShippingAddress, deliveryMethod, orderItems, subTatal);
+
+            var spec = new OrderWithPaymentIntentSpecifications(basket.PaymentIntentId);
+            var exOrder =await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
+            if (exOrder is not null)
+            {
+                 _unitOfWork.Repository<Order>().DeleteAsync(exOrder);
+                await _paymentService.CreateOrUpdatePaymentIntent(basketId);
+            }
+
+
+            var order = new Order(buyerEmail, ShippingAddress, deliveryMethod, orderItems, subTatal,basket.PaymentIntentId);
             await _unitOfWork.Repository<Order>().AddAsync(order);
 
             var result = await _unitOfWork.CompleteAsync();

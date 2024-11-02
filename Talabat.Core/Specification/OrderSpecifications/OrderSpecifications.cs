@@ -24,5 +24,6 @@ namespace Talabat.Core.Specification.OrderSpecifications
 
             AddOrderBy(o => o.OrederDate);
         }
+
     }
 }
